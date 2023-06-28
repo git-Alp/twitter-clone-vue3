@@ -1,8 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 
 export default {
-  purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    // Example content paths...
+    './index.html',
+    './src/**/*.{js,jsx,ts,tsx,vue}',
+  ],
+  darkMode: 'media',
   theme: {
     container: {
       center: true
