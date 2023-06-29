@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 
 export type Post = {
+  id: string;
   src: string;
   name: string;
   handle: string;

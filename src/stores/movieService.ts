@@ -1,5 +1,6 @@
 import axios from "axios";
 import { defineStore } from "pinia";
+import {v4 as uuidv4} from 'uuid'
 
 const apiKey = import.meta.env.VITE_MOVIE_API_KEY
 
@@ -14,6 +15,7 @@ function topRated() {
 }
 
 type Item = {
+  id: string;
   backdrop_path: string;
   title: string;
   user: string;
@@ -36,6 +38,7 @@ export const useMovieStore = defineStore('movie', {
             const mapMovieData = movies.data.results.map((movie: Item) => {
               const userName = movie.title.replace(/['\.,?!: ]/g,'')
               movie.user = '@' + userName;
+              movie.id = uuidv4();
               return movie;
             });
             this.movies = mapMovieData
