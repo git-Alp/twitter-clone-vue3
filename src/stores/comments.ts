@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-export type Post = {
+export type Comment = {
   id: string;
   src: string;
   name: string;
@@ -11,12 +11,12 @@ export type Post = {
   retweets: number;
   like: number;
 }
-export const useDataStore = defineStore('data', {
+export const useCommentStore = defineStore('comment', {
   state: () => ({
-    items: [] as Post[]
+    items: [] as Comment[]
   }),
   actions: {
-    addItem(item: Post) {
+    addNewComment(item: Comment) {
       this.items.push(item)
     }
   }

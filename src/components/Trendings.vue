@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 const pseudoData = ref({
   trending: [
-    {top: 'Trending in TX', title: 'Gigi', bottom: 'Trending with: Rip Gigi'},
+    {top: 'Trending in Turkey', title: '#Deprem', bottom: '13.2K Tweets'},
     {top: 'Music', title: 'We Won', bottom: '135K Tweets'},
     {top: 'Pop', title: 'Blue Ivy', bottom: '40k tweets'},
     {top: 'Trending in US', title: 'Denim Day', bottom: '40k tweets'},
