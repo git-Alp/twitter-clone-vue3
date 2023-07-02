@@ -39,7 +39,7 @@ function handleComments() {
   const findItem = _.find(dataStore.items, function(item) {
     return item.id === id;
   })
-  comments.value = findItem?.commentList;
+  if (findItem) comments.value = findItem.commentList;
 }
 
 onMounted(() => {
