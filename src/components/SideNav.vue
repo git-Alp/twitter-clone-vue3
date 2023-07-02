@@ -35,7 +35,7 @@ const navData = ref(data)
       </button>
       <div v-if="navData.dropdown === true" class="absolute bottom-0 left-0 w-64 rounded-lg shadow-md border-lightest bg-white mb-16">
         <button @click="navData.dropdown = false" class="p-3 flex items-center w-full hover:bg-lightest focus:outline-none">
-          <img src="{{}}" class="w-10 h-10 rounded-full border border-lighter" />
+          <img :src="`${navData.userinfo.src}`" class="w-10 h-10 rounded-full border border-lighter" />
           <div class="ml-4">
             <p class="text-sm font-bold leading-tight"> {{navData.userinfo.fullname}} </p>
             <p class="text-sm leading-tight"> {{navData.userinfo.username}} </p>

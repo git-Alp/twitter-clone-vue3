@@ -5,7 +5,7 @@ import Trendings from '../components/Trendings.vue'
 </script>
 
 <template>
-  <div id="home" class="flex container h-screen w-full">
+  <div id="detail" class="flex container h-screen w-full">
     <SideNav />
     <TimeLine />
     <Trendings />
