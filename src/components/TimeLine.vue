@@ -1,32 +1,43 @@
 <script setup lang="ts">
-import { reactive, onBeforeMount } from 'vue'
-import { useDataStore } from '../stores/posts';
-import { useMovieStore } from '../stores/movieService';
+import { ref, reactive, onBeforeMount, computed } from 'vue'
+import data from '../data.json'
+import { useDataStore, handleDateFormat } from '../stores/posts';
 import { RouterLink } from 'vue-router'
 import {v4 as uuidv4} from 'uuid'
+import _ from "lodash";
 
+const timeLineData = ref(data)
 const dataStore = useDataStore();
-const movieStore = useMovieStore();
 
 const newTweet = reactive({
-  id: uuidv4(),
+  id: "",
   src: '/img/avatar.png',
-  name: 'Hayati Tehlike',
-  handle: '@HayatiBey',
-  time: '20 min',
+  username: '@HayatiBey',
+  fullname: 'Hayati Tehlike',
+  time: "",
   content: '',
-  comments: 1,
-  retweets: 2,
-  like: 3,
-})
+  comments: 0,
+  retweets: 0,
+  like: 0,
+  isOnTimeLine: true,
+  commentList: []
+});
 
 function addNewTweet () {
-  dataStore.addItem({ ...newTweet})
-  console.log("{ ...newTweet}", { ...newTweet});
+  newTweet.id = uuidv4();
+  newTweet.time = new Date().toString();
+  dataStore.addItem({ ...newTweet});
   newTweet.content = ''
 }
 
-onBeforeMount(() => movieStore.getTopRatedMovies())
+const showTweets = computed(() => _.filter(dataStore.items, function(item) {
+  return item.isOnTimeLine;
+}))
+
+onBeforeMount(() => {
+  dataStore.getItems()
+  dataStore.sortItems()
+  })
 </script>
 
 <template>
@@ -36,7 +47,7 @@ onBeforeMount(() => movieStore.getTopRatedMovies())
     </div>
     <div class="px-5 py-3 border-b border-lighter flex">
       <div class="flex-none">
-        <img src="/img/avatar.png" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
+        <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewTweet" class="w-full px-4 relative">
         <textarea v-model="newTweet.content" placeholder="What is happening?!" class="mt-3 pb-3 w-full focus:outline-none"/>
@@ -54,15 +65,15 @@ onBeforeMount(() => movieStore.getTopRatedMovies())
       </form>
     </div>
     <div class="flex flex-col-reverse">
-      <RouterLink :to="`/tweet/${tweet.id}`" v-for="tweet in dataStore.items" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
+      <RouterLink :to="`/tweet/${tweet.id}`" v-for="tweet in showTweets" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
         <div class="flex-none mr-4">
           <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
         </div>
         <div class="w-full">
           <div class="flex items-center w-full">
-            <p class="font-semibold"> {{tweet.name}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.handle}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.time}} </p>
+            <p class="font-semibold"> {{tweet.fullname}} </p>
+            <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
+            <p class="text-sm text-dark ml-2">{{ handleDateFormat(tweet.time) }}</p>
             <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
           </div>
           <p class="py-2"> {{ tweet.content }} </p>
@@ -86,38 +97,5 @@ onBeforeMount(() => movieStore.getTopRatedMovies())
         </div>
       </RouterLink>
     </div>
-    <RouterLink :to="`/tweet/${item.id}`" v-for="item in movieStore.movies" :key="item.id" class="w-full p-4 border-b hover:bg-lighter flex">
-      <div class="flex-none mr-4">
-        <img :src="`https://image.tmdb.org/t/p/w500/${item.backdrop_path}`" class="h-12 w-12 rounded-full flex-none"/>
-      </div>
-      <div class="w-full">
-        <div class="flex items-center w-full">
-          <p class="font-semibold"> {{ item.title}} </p>
-          <p class="text-sm text-dark ml-2"> {{ item.user }} </p>
-          <p class="text-sm text-dark ml-2"> {{ item.release_date }} </p>
-          <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
-        </div>
-        <p class="py-2">
-          {{ item.overview }}
-        </p>
-        <div class="flex items-center justify-between w-full">
-          <div class="flex items-center text-sm text-dark">
-            <i class="far fa-comment mr-3"></i>
-            <p> {{ item.popularity }} </p>
-          </div>
-          <div class="flex items-center text-sm text-dark">
-            <i class="fas fa-retweet mr-3"></i>
-            <p> {{ item.vote_average }} </p>
-          </div>
-          <div class="flex items-center text-sm text-dark">
-            <i class="fas fa-heart mr-3"></i>
-            <p> {{ item.vote_count }} </p>
-          </div>
-          <div class="flex items-center text-sm text-dark">
-            <i class="fas fa-share-square mr-3"></i>
-          </div>
-        </div>
-      </div>
-    </RouterLink>
   </div>
 </template>

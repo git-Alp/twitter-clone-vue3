@@ -1,0 +1,42 @@
+{
+  "id": "home",
+  "dropdown": false,
+  "userinfo": {"id": "", "src": "/img/avatar.png", "username": "@HayatiBey", "fullname": "Hayati Tehlike"},
+  "tabs": [
+    {"id": "home", "url": "/", "icon": "fas fa-home", "title": "Home"},
+    {"id": "explore", "url": "#", "icon": "fas fa-search", "title": "Explore"},
+    {"id": "notifications", "url": "#", "icon": "far fa-bell", "title": "Notifications"},
+    {"id": "messages", "url": "#", "icon": "far fa-envelope", "title": "Messages"},
+    {"id": "lists", "url": "#", "icon": "fas fa-clipboard-list", "title": "Lists"},
+    {"id": "bookmarks", "url": "#", "icon": "far fa-bookmark", "title": "Bookmarks"},
+    {"id": "profile", "url": "#", "icon": "far fa-user", "title": "Profile"},
+    {"id": "more", "url": "#", "icon": "fas fa-ellipsis-h", "title": "More"}
+  ],
+  "trending": [
+    {"top": "Trending in Turkey", "title": "#Deprem", "bottom": "13.2K Tweets"},
+    {"top": "Music", "title": "We Won", "bottom": "135K Tweets"},
+    {"top": "Pop", "title": "Blue Ivy", "bottom": "40k tweets"},
+    {"top": "Trending in US", "title": "Denim Day", "bottom": "40k tweets"},
+    {"top": "Trending", "title": "When Beyonce", "bottom": "25.4k tweets"}
+  ],
+  "friends": [
+    {"id": "", "src": "/img/zuckerberg.jpeg", "username": "@zuckerberg", "name": "Mark Zuckerberg" },
+    {"id": "", "src": "/img/astronomy.jpeg", "username": "@astronomy", "name": "Amazing Astronomy" },
+    {"id": "", "src": "/img/kimyong.jpeg", "username": "@killThemAll", "name": "Kim Yong Un" }
+  ],
+  "footer": [
+    {"title": "Terms of Service", "url": "#", "icon": ""},
+    {"title": "Privacy Policy", "url": "#", "icon": ""},
+    {"title": "Cookie Policy", "url": "#", "icon": ""},
+    {"title": "Imprint", "url": "#", "icon": ""},
+    {"title": "Accessibility", "url": "#", "icon": ""},
+    {"title": "Ads info", "url": "#", "icon": ""},
+    {"title": "More", "url": "#", "icon": "fas fa-ellipsis-h"}
+  ],
+  "following": [
+    {"id": "1", "src": "/img/elon.jpg", "username": "@teslaBoy", "fullname": "Elon Musk", "time": "Jul/02/2023", "content": "Should I just quarantine on mars??", "comments": 0, "retweets": 55, "like": 953, "isOnTimeLine": true, "commentList": []},
+    {"id": "2", "src": "/img/kevin.jpg", "username": "@miniRock", "fullname": "Kevin Hart", "time": "Jul/01/2023", "content": "Should me and the rock do another sub-par movie together????", "comments": 0, "retweets": 24, "like": 567, "isOnTimeLine": true, "commentList": []},
+    {"id": "3", "src": "/img/elon.jpg", "username": "@teslaBoy", "fullname": "Elon Musk", "time": "Jun/29/2023", "content": "Haha just made a flame thrower. Shld I sell them?", "comments": 0, "retweets": 432, "like": 666, "isOnTimeLine": true, "commentList": []},
+    {"id": "4", "src": "/img/polat.jpeg", "username": "@pusu", "fullname": "Polat Alemdar", "time": "Jun/28/2023", "content": "Ya tarih yazacağız ya da tarih olacağız!", "comments": 0, "retweets": 432, "like": 999, "isOnTimeLine": true, "commentList": []}
+  ]
+}

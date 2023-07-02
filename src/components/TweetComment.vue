@@ -1,37 +1,60 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
-import { useCommentStore } from '../stores/comments';
-import {v4 as uuidv4} from 'uuid'
+import { ref, reactive, onMounted } from 'vue';
+import data from '../data.json'
+import { useDataStore, Post, handleDateFormat } from '../stores/posts';
+import { useRoute, RouterLink } from 'vue-router'
+import { v4 as uuidv4 } from 'uuid'
+import _ from "lodash";
 
-const commentStore = useCommentStore();
+const timeLineData = ref(data)
+const dataStore = useDataStore();
+const route = useRoute()
+const {id} = route.params
 
-const NewComment = reactive({
-  id: uuidv4(),
+const newComment = reactive({
+  id: '',
   src: '/img/avatar.png',
-  name: 'Hayati Tehlike',
-  handle: '@HayatiBey',
-  time: '20 min',
+  username: '@HayatiBey',
+  fullname: 'Hayati Tehlike',
+  time: '',
   content: '',
-  comments: 1,
-  retweets: 2,
-  like: 3,
+  comments: 0,
+  retweets: 0,
+  like: 0,
+  isOnTimeLine: false,
+  commentList: []
 })
 
+let comments = ref([]as Post[]);
+
 function addNewComment () {
-  commentStore.addNewComment({ ...NewComment})
-  console.log("{ ...NewComment}", { ...NewComment});
-  NewComment.content = ''
+  newComment.id = uuidv4();
+  newComment.time = new Date().toString();
+  dataStore.addItem({ ...newComment});
+  dataStore.addComment({ ...newComment}, id);
+  newComment.content = ''
 }
+
+function handleComments() {
+  const findItem = _.find(dataStore.items, function(item) {
+    return item.id === id;
+  })
+  comments.value = findItem?.commentList;
+}
+
+onMounted(() => {
+  handleComments()
+})
 </script>
 
 <template>
   <div>
     <div class="px-5 py-3 border-b border-lighter flex">
       <div class="flex-none">
-        <img src="/img/avatar.png" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
+        <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewComment" class="w-full px-4 relative">
-        <textarea v-model="NewComment.content" placeholder="What is happening?!" class="mt-3 pb-3 w-full focus:outline-none"/>
+        <textarea v-model="newComment.content" placeholder="Tweet your reply!" class="mt-3 pb-3 w-full focus:outline-none"/>
         <div class="flex items-center">
           <i class="text-lg text-blue mr-4 far fa-image"></i>
           <i class="text-lg text-blue mr-4 fas fa-film"></i>
@@ -46,15 +69,15 @@ function addNewComment () {
       </form>
     </div>
     <div class="flex flex-col-reverse">
-      <div v-for="tweet in commentStore.items" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
+      <RouterLink :to="`/tweet/${tweet.id}`" v-for="tweet in comments" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
         <div class="flex-none mr-4">
           <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
         </div>
         <div class="w-full">
           <div class="flex items-center w-full">
-            <p class="font-semibold"> {{tweet.name}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.handle}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.time}} </p>
+            <p class="font-semibold"> {{tweet.fullname}} </p>
+            <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
+            <p class="text-sm text-dark ml-2"> {{handleDateFormat(tweet.time)}} </p>
             <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
           </div>
           <p class="py-2"> {{ tweet.content }} </p>
@@ -76,7 +99,7 @@ function addNewComment () {
             </div>
           </div>
         </div>
-      </div>
+      </RouterLink>
     </div>
   </div>
 </template>

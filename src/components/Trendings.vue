@@ -1,22 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import data from '../data.json'
 
-const pseudoData = ref({
-  trending: [
-    {top: 'Trending in Turkey', title: '#Deprem', bottom: '13.2K Tweets'},
-    {top: 'Music', title: 'We Won', bottom: '135K Tweets'},
-    {top: 'Pop', title: 'Blue Ivy', bottom: '40k tweets'},
-    {top: 'Trending in US', title: 'Denim Day', bottom: '40k tweets'},
-    {top: 'Trending', title: 'When Beyonce', bottom: '25.4k tweets'},
-  ],
-  friends: [
-    {src: '/img/elon.jpg', name: 'Elon Musk', handle: '@teslaBoy'},
-    {src: '/img/kevin.jpg', name: 'Kevin Hart', handle: '@miniRock'},
-    {src: '/img/polat.jpeg', name: 'Polat Alemdar', handle: '@pusu'}
-  ]
-});
-
+const trendingData = ref(data)
 </script>
+
 <template>
   <div class="md:block hidden w-1/3 h-full border-l border-lighter py-2 px-6 overflow-y-scroll relative">
     <input class="p-2 pl-12 rounded-full w-full  bg-lighter text-sm mb-4" placeholder="Search Twitter" />
@@ -32,7 +20,7 @@ const pseudoData = ref({
       <div class="flex items-center justify-between p-3">
         <p class="text-lg font-bold">Trends for You</p>
       </div>
-      <button v-for="trend in pseudoData.trending" class="w-full flex justify-between hover:bg-lighter p-3">
+      <button v-for="(trend, index) in trendingData.trending" :key="index" class="w-full flex justify-between hover:bg-lighter p-3">
         <div>
           <p class="text-xs text-left leading-tight text-dark"> {{ trend.top}} </p>
           <p class="font-semibold text-sm text-left leading-tight"> {{ trend.title}} </p>
@@ -48,11 +36,11 @@ const pseudoData = ref({
       <div class=" p-3">
         <p class="text-lg font-bold">Who to Follow</p>
       </div>
-      <button v-for="friend in pseudoData.friends" class="w-full flex hover:bg-lighter p-3">
+      <button v-for="(friend, index) in trendingData.friends" :key="index" class="w-full flex hover:bg-lighter p-3">
         <img :src="`${ friend.src }`" class="w-12 h-12 rounded-full border border-lighter object-cover" />
         <div class="hidden lg:block ml-4 text-start">
           <p class="text-sm font-bold leading-tight"> {{ friend.name }} </p>
-          <p class="text-sm leading-tight"> {{ friend.handle }} </p>
+          <p class="text-sm leading-tight"> {{ friend.username }} </p>
         </div>
         <button class="ml-auto text-sm text-white bg-black py-1 px-4 rounded-full border-2 border-black font-semibold">
           Follow
@@ -63,16 +51,10 @@ const pseudoData = ref({
       </button>
     </div>
     <div class="w-full rounded-lg my-4 px-2">
-      <div flex flex-wrap>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> Terms of Service </a>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> Privacy Policy </a>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> Cookie Policy </a>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> Imprint </a>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> Accessibility </a>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> Ads info </a>
-        <a href="#" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> 
-          More 
-          <i class="fas fa-ellipsis-h"></i>
+      <div class="flex flex-wrap">
+        <a v-for="(item, index) in trendingData.footer" :key="index" :href="item.url" class="text-sm text-left text-dark m-1 mt-0 hover:underline"> 
+          {{item.title}} 
+          <i v-if="item.icon" :class="`${ item.icon }`"></i>
         </a>
       </div>
       <span class="text-sm text-left text-dark m-1 mt-0">© 2023 X Corp.</span>
