@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount, computed } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 import data from '../data.json'
 import { useDataStore, handleDateFormat } from '../stores/posts';
 import { RouterLink } from 'vue-router'
@@ -9,25 +9,30 @@ import _ from "lodash";
 const timeLineData = ref(data)
 const dataStore = useDataStore();
 
-const newTweet = reactive({
-  id: "",
-  src: '/img/avatar.png',
-  username: '@HayatiBey',
-  fullname: 'Hayati Tehlike',
-  time: "",
-  content: '',
-  comments: 0,
-  retweets: 0,
-  like: 0,
-  isOnTimeLine: true,
-  commentList: []
-});
+const newTweetContent = ref('');
 
 function addNewTweet () {
-  newTweet.id = uuidv4();
-  newTweet.time = new Date().toString();
-  dataStore.addItem({ ...newTweet});
-  newTweet.content = ''
+  let newTweet = {
+    id: uuidv4(),
+    src: '/img/avatar.png',
+    username: '@HayatiBey',
+    fullname: 'Hayati Tehlike',
+    time: new Date().toString(),
+    content: newTweetContent.value,
+    comments: 0,
+    retweets: 0,
+    like: 0,
+    isLiked: false,
+    isOnTimeLine: true,
+    commentList: []
+  };
+
+  dataStore.addItem(newTweet);
+  newTweetContent.value = ''
+}
+
+function handleLikePost(val: string) {
+  dataStore.likePost(val)
 }
 
 const showTweets = computed(() => _.filter(dataStore.items, function(item) {
@@ -37,7 +42,7 @@ const showTweets = computed(() => _.filter(dataStore.items, function(item) {
 onBeforeMount(() => {
   dataStore.getItems()
   dataStore.sortItems()
-  })
+})
 </script>
 
 <template>
@@ -50,7 +55,7 @@ onBeforeMount(() => {
         <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewTweet" class="w-full px-4 relative">
-        <textarea v-model="newTweet.content" placeholder="What is happening?!" class="mt-3 pb-3 w-full focus:outline-none"/>
+        <textarea v-model="newTweetContent" placeholder="What is happening?!" class="mt-3 pb-3 w-full focus:outline-none"/>
         <div class="flex items-center">
           <i class="text-lg text-blue mr-4 far fa-image"></i>
           <i class="text-lg text-blue mr-4 fas fa-film"></i>
@@ -65,37 +70,39 @@ onBeforeMount(() => {
       </form>
     </div>
     <div class="flex flex-col-reverse">
-      <RouterLink :to="`/tweet/${tweet.id}`" v-for="tweet in showTweets" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
+      <div v-for="tweet in showTweets" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
         <div class="flex-none mr-4">
           <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
         </div>
         <div class="w-full">
-          <div class="flex items-center w-full">
-            <p class="font-semibold"> {{tweet.fullname}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
-            <p class="text-sm text-dark ml-2">{{ handleDateFormat(tweet.time) }}</p>
-            <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
-          </div>
-          <p class="py-2"> {{ tweet.content }} </p>
+          <RouterLink :to="`/tweet/${tweet.id}`" class="w-full">
+            <div class="flex items-center w-full">
+              <p class="font-semibold"> {{tweet.fullname}} </p>
+              <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
+              <p class="text-sm text-dark ml-2">{{ handleDateFormat(tweet.time) }}</p>
+              <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
+            </div>
+            <p class="py-2"> {{ tweet.content }} </p>
+          </RouterLink>
           <div class="flex items-center justify-between w-full">
-            <div class="flex items-center text-sm text-dark">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer">
               <i class="far fa-comment mr-3"></i>
               <p> {{tweet.comments}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer">
               <i class="fas fa-retweet mr-3"></i>
               <p> {{tweet.retweets}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark">
-              <i class="fas fa-heart mr-3"></i>
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="handleLikePost(tweet.id)">
+              <i class="fa-heart mr-3" :class="tweet.isLiked ? 'fa text-red-600' : 'fas'"></i>
               <p> {{tweet.like}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer">
               <i class="fas fa-share-square mr-3"></i>
             </div>
           </div>
         </div>
-      </RouterLink>
+      </div>
     </div>
   </div>
 </template>

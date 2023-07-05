@@ -13,6 +13,7 @@ export type Post = {
   comments: number;
   retweets: number;
   like: number;
+  isLiked: boolean;
   isOnTimeLine: boolean;
   commentList: Post[];
 }
@@ -41,6 +42,17 @@ export const useDataStore = defineStore('data', {
       if (findItem) {
         findItem.comments ++;
         findItem.commentList.push(item);
+      }
+    },
+    likePost(id: any) {
+      const findItem = _.find(this.items, function(item) {
+        return item.id === id;
+      });
+      if (findItem) {
+        findItem.isLiked = !findItem.isLiked
+        findItem.isLiked ? findItem.like ++ : findItem.like --;
+        console.log("findItem.isLiked", findItem.isLiked);
+        
       }
     },
     sortItems() {      

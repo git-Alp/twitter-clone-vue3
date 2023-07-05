@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import data from '../data.json'
 import { useDataStore, Post, handleDateFormat } from '../stores/posts';
 import { useRoute, RouterLink } from 'vue-router'
@@ -10,29 +10,29 @@ const timeLineData = ref(data)
 const dataStore = useDataStore();
 const route = useRoute()
 const {id} = route.params
-
-const newComment = reactive({
-  id: '',
-  src: '/img/avatar.png',
-  username: '@HayatiBey',
-  fullname: 'Hayati Tehlike',
-  time: '',
-  content: '',
-  comments: 0,
-  retweets: 0,
-  like: 0,
-  isOnTimeLine: false,
-  commentList: []
-})
-
-let comments = ref([]as Post[]);
+const comments = ref([]as Post[]);
+const newCommentContent = ref('');
+const commentLike = ref(false);
 
 function addNewComment () {
-  newComment.id = uuidv4();
-  newComment.time = new Date().toString();
-  dataStore.addItem({ ...newComment});
-  dataStore.addComment({ ...newComment}, id);
-  newComment.content = ''
+  let newComment = {
+    id: uuidv4(),
+    src: '/img/avatar.png',
+    username: '@HayatiBey',
+    fullname: 'Hayati Tehlike',
+    time: new Date().toString(),
+    content: newCommentContent.value,
+    comments: 0,
+    retweets: 0,
+    like: 0,
+    isLiked: false,
+    isOnTimeLine: false,
+    commentList: []
+  };
+
+  dataStore.addItem(newComment);
+  dataStore.addComment(newComment, id);
+  newCommentContent.value = ''
 }
 
 function handleComments() {
@@ -42,9 +42,12 @@ function handleComments() {
   if (findItem) comments.value = findItem.commentList;
 }
 
-onMounted(() => {
-  handleComments()
-})
+function handleLikePost(val: string) {
+  dataStore.likePost(val)
+}
+
+watch(dataStore.items, handleComments)
+onMounted(() => handleComments())
 </script>
 
 <template>
@@ -54,7 +57,7 @@ onMounted(() => {
         <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewComment" class="w-full px-4 relative">
-        <textarea v-model="newComment.content" placeholder="Tweet your reply!" class="mt-3 pb-3 w-full focus:outline-none"/>
+        <textarea v-model="newCommentContent" placeholder="Tweet your reply!" class="mt-3 pb-3 w-full focus:outline-none"/>
         <div class="flex items-center">
           <i class="text-lg text-blue mr-4 far fa-image"></i>
           <i class="text-lg text-blue mr-4 fas fa-film"></i>
@@ -69,37 +72,39 @@ onMounted(() => {
       </form>
     </div>
     <div class="flex flex-col-reverse">
-      <RouterLink :to="`/tweet/${tweet.id}`" v-for="tweet in comments" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
+      <div v-for="tweet in comments" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
         <div class="flex-none mr-4">
           <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
         </div>
         <div class="w-full">
-          <div class="flex items-center w-full">
-            <p class="font-semibold"> {{tweet.fullname}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
-            <p class="text-sm text-dark ml-2"> {{handleDateFormat(tweet.time)}} </p>
-            <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
-          </div>
-          <p class="py-2"> {{ tweet.content }} </p>
+          <RouterLink :to="`/tweet/${tweet.id}`" class="w-full">
+            <div class="flex items-center w-full">
+              <p class="font-semibold"> {{tweet.fullname}} </p>
+              <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
+              <p class="text-sm text-dark ml-2"> {{handleDateFormat(tweet.time)}} </p>
+              <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
+            </div>
+            <p class="py-2"> {{ tweet.content }} </p>
+          </RouterLink>
           <div class="flex items-center justify-between w-full">
-            <div class="flex items-center text-sm text-dark">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer">
               <i class="far fa-comment mr-3"></i>
               <p> {{tweet.comments}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer">
               <i class="fas fa-retweet mr-3"></i>
               <p> {{tweet.retweets}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark">
-              <i class="fas fa-heart mr-3"></i>
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="handleLikePost(tweet.id)">
+              <i class="fa-heart mr-3" :class="tweet.isLiked ? 'fa text-red-600' : 'fas'"></i>
               <p> {{tweet.like}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer">
               <i class="fas fa-share-square mr-3"></i>
             </div>
           </div>
         </div>
-      </RouterLink>
+      </div>
     </div>
   </div>
 </template>
