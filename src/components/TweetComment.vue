@@ -12,7 +12,6 @@ const route = useRoute()
 const {id} = route.params
 const comments = ref([]as Post[]);
 const newCommentContent = ref('');
-const commentLike = ref(false);
 
 function addNewComment () {
   let newComment = {
