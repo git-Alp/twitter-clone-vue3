@@ -55,7 +55,7 @@ onBeforeMount(() => {
         <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewTweet" class="w-full px-4 relative">
-        <textarea v-model="newTweetContent" placeholder="What is happening?!" class="mt-3 pb-3 w-full focus:outline-none"/>
+        <textarea v-model="newTweetContent" placeholder="What is happening?!" maxlength="500" class="mt-3 pb-3 w-full focus:outline-none"/>
         <div class="flex items-center">
           <i class="text-lg text-blue mr-4 far fa-image"></i>
           <i class="text-lg text-blue mr-4 fas fa-film"></i>
@@ -74,13 +74,13 @@ onBeforeMount(() => {
         <div class="flex-none mr-4">
           <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
         </div>
-        <div class="w-full">
+        <div class="max-w-full w-full">
           <RouterLink :to="`/tweet/${tweet.id}`" class="w-full">
-            <div class="flex items-center w-full">
-              <p class="font-semibold"> {{tweet.fullname}} </p>
-              <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
-              <p class="text-sm text-dark ml-2">{{ handleDateFormat(tweet.time) }}</p>
-              <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
+            <div class="flex items-center max-w-full">
+              <p class="truncate font-semibold max-w-[120px] md:max-w-[110px] xl:max-w-[310px]"> {{tweet.fullname}} </p>
+              <p class="truncate text-sm text-dark ml-2 max-w-[80px] xl:max-w-[100px]"> {{tweet.username}} </p>
+              <p class="truncate text-sm text-dark mx-2">{{ handleDateFormat(tweet.time) }}</p>
+              <i class="truncate fa fa-ellipsis-h text-dark ml-auto mr-2"></i>
             </div>
             <p class="py-2"> {{ tweet.content }} </p>
           </RouterLink>

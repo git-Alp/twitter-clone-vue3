@@ -8,7 +8,7 @@ const navData = ref(data)
 </script>
 
 <template>
-  <div class="lg:w-1/5 border-r border-lighter px-2 lg:px-6 py-2 flex flex-col justify-between">
+  <div class="lg:w-1/5 border-r border-lighter px-2 lg:px-6 py-2 hidden sm:flex flex-col justify-between">
     <div>
       <RouterLink to="/" class="h-12 w-12 ml-2 hover:bg-lightblue text-3xl rounded-full text-blue">
         <i class="fab fa-twitter"></i>

@@ -28,12 +28,12 @@ const tweet = computed(() => _.find(dataStore.items, function(item) {
         <div class="flex-none mr-4">
           <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
         </div>
-        <div class="w-full">
-          <div class="flex items-center w-full">
-            <p class="font-semibold"> {{tweet.fullname}} </p>
-            <p class="text-sm text-dark ml-2"> {{tweet.username}} </p>
-            <p class="text-sm text-dark ml-2"> {{handleDateFormat(tweet.time)}} </p>
-            <i class="fa fa-ellipsis-h text-dark ml-auto"></i>
+        <div class="max-w-full w-full">
+          <div class="flex items-center max-w-full">
+            <p class="truncate font-semibold max-w-[120px] md:max-w-[110px] xl:max-w-[310px]"> {{tweet.fullname}} </p>
+            <p class="truncate text-sm text-dark ml-2 max-w-[80px] xl:max-w-[100px]"> {{tweet.username}} </p>
+            <p class="truncate text-sm text-dark mx-2"> {{handleDateFormat(tweet.time)}} </p>
+            <i class="truncate fa fa-ellipsis-h text-dark ml-auto mr-2"></i>
           </div>
           <p class="py-2"> {{ tweet.content }} </p>
           <div class="flex items-center justify-between w-full">
