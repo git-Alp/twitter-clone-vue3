@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import data from '../data.json'
+import { ref, reactive, onMounted, watch } from 'vue';
 import { useDataStore, Post, handleDateFormat } from '../stores/posts';
+import { useUserStore, User } from '../stores/user';
 import { useRoute, RouterLink } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
 import _ from "lodash";
 
-const timeLineData = ref(data)
 const dataStore = useDataStore();
+const userStore = useUserStore();
 const route = useRoute()
 const {id} = route.params
 const comments = ref([]as Post[]);
-const newCommentContent = ref('');
+let newCommentContent = ref('');
+let userInfo = reactive({} as User);
 
 function addNewComment () {
   let newComment = {
     id: uuidv4(),
-    src: '/img/avatar.png',
-    username: '@HayatiBey',
-    fullname: 'Hayati Tehlike',
+    src: userInfo.photo,
+    username: userInfo.email,
+    fullname: userInfo.username,
     time: new Date().toString(),
     content: newCommentContent.value,
     comments: 0,
@@ -46,14 +47,17 @@ function handleLikePost(val: string) {
 }
 
 watch(dataStore.items, handleComments)
-onMounted(() => handleComments())
+onMounted(() => {
+  userInfo = userStore.user
+  handleComments()
+})
 </script>
 
 <template>
   <div>
     <div class="px-5 py-3 border-b border-lighter flex">
       <div class="flex-none">
-        <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
+        <img :src="userInfo.photo" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewComment" class="w-full px-4 relative">
         <textarea v-model="newCommentContent" placeholder="Tweet your reply!" maxlength="500" class="mt-3 pb-3 w-full focus:outline-none"/>

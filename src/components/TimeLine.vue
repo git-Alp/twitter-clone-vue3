@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, computed } from 'vue'
-import data from '../data.json'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useDataStore, handleDateFormat } from '../stores/posts';
+import { useUserStore, User } from '../stores/user';
 import { RouterLink } from 'vue-router'
 import {v4 as uuidv4} from 'uuid'
 import _ from "lodash";
 
-const timeLineData = ref(data)
 const dataStore = useDataStore();
+const userStore = useUserStore();
 
-const newTweetContent = ref('');
+let newTweetContent = ref('');
+let userInfo = reactive({} as User);
 
 function addNewTweet () {
   let newTweet = {
     id: uuidv4(),
-    src: '/img/avatar.png',
-    username: '@HayatiBey',
-    fullname: 'Hayati Tehlike',
+    src: userInfo.photo,
+    username: userInfo.email,
+    fullname: userInfo.username,
     time: new Date().toString(),
     content: newTweetContent.value,
     comments: 0,
@@ -39,7 +40,10 @@ const showTweets = computed(() => _.filter(dataStore.items, function(item) {
   return item.isOnTimeLine;
 }))
 
-onBeforeMount(() => {
+onMounted(() => {
+  userInfo = userStore.user
+  console.log("userInfo", userInfo);
+  
   dataStore.getItems()
   dataStore.sortItems()
 })
@@ -52,7 +56,7 @@ onBeforeMount(() => {
     </div>
     <div class="px-5 py-3 border-b border-lighter flex">
       <div class="flex-none">
-        <img :src="`${timeLineData.userinfo.src}`" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
+        <img :src="userInfo.photo" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
       <form v-on:submit.prevent = "addNewTweet" class="w-full px-4 relative">
         <textarea v-model="newTweetContent" placeholder="What is happening?!" maxlength="500" class="mt-3 pb-3 w-full focus:outline-none"/>

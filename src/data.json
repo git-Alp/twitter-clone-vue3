@@ -3,7 +3,7 @@
   "dropdown": false,
   "userinfo": {"id": "", "src": "/img/avatar.png", "username": "@HayatiBey", "fullname": "Hayati Tehlike"},
   "tabs": [
-    {"id": "home", "url": "/", "icon": "fas fa-home", "title": "Home"},
+    {"id": "home", "url": "/home", "icon": "fas fa-home", "title": "Home"},
     {"id": "explore", "url": "#", "icon": "fas fa-search", "title": "Explore"},
     {"id": "notifications", "url": "#", "icon": "far fa-bell", "title": "Notifications"},
     {"id": "messages", "url": "#", "icon": "far fa-envelope", "title": "Messages"},

@@ -20,6 +20,7 @@ export default {
         'light': '#AAB8C2',
         'lighter': '#E1E8ED',
         'lightest': '#F5F8FA',
+        'silver': '#CCCCCC',
       }
     },
   },

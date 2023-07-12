@@ -21,7 +21,7 @@ const tweet = computed(() => _.find(dataStore.items, function(item) {
 <template>
   <div class="w-full md:w-1/2 h-full overflow-y-scroll">
     <div class="p-3 border-b border-lighter flex items-center justify-start">
-      <RouterLink to="/" class="fa fa-arrow-left flex justify-center items-center w-8 h-8 rounded-full hover:bg-lighter" aria-hidden="true"></RouterLink>
+      <RouterLink to="/home" class="fa fa-arrow-left flex justify-center items-center w-8 h-8 rounded-full hover:bg-lighter" aria-hidden="true"></RouterLink>
       <span class="text-xl font-bold ml-8">Tweet</span>
     </div>
     <div v-if="tweet" class="w-full p-4 border-b hover:bg-lighter flex">

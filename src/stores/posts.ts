@@ -51,8 +51,6 @@ export const useDataStore = defineStore('data', {
       if (findItem) {
         findItem.isLiked = !findItem.isLiked
         findItem.isLiked ? findItem.like ++ : findItem.like --;
-        console.log("findItem.isLiked", findItem.isLiked);
-        
       }
     },
     sortItems() {      
