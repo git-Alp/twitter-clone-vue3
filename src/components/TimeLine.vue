@@ -1,16 +1,34 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useDataStore, handleDateFormat } from '../stores/posts';
+import { ref, reactive, onBeforeMount, computed, onMounted } from 'vue'
+import { useDataStore, handleDateFormat, Post } from '../stores/posts';
 import { useUserStore, User } from '../stores/user';
 import { RouterLink } from 'vue-router'
 import {v4 as uuidv4} from 'uuid'
-import _ from "lodash";
+import firebaseConfig from '../firebase/firebaseConfig';
+// import { collection, query, onSnapshot, addDoc } from "firebase/firestore";
+// import { db } from "../firebase/firebaseConfig";
 
 const dataStore = useDataStore();
 const userStore = useUserStore();
 
 let newTweetContent = ref('');
 let userInfo = reactive({} as User);
+let posts = ref([] as Post[])
+
+function handleGetPosts () {
+  // firebaseConfig.getPosts()
+  //   .then(response => {
+  //     console.log("response2", response);
+  //     posts.value = response
+  //     console.log("posts.value", posts.value);
+      
+  //   })
+  //   .catch(error => {
+  //     console.log(error)
+  //   })
+
+  posts.value = dataStore.items
+}
 
 function addNewTweet () {
   let newTweet = {
@@ -28,7 +46,9 @@ function addNewTweet () {
     commentList: []
   };
 
-  dataStore.addItem(newTweet);
+  // addDoc(collection(db, "posts"), newTweet);
+  // firebaseConfig.addPost(newTweet)
+  dataStore.createItem(newTweet)
   newTweetContent.value = ''
 }
 
@@ -36,16 +56,40 @@ function handleLikePost(val: string) {
   dataStore.likePost(val)
 }
 
-const showTweets = computed(() => _.filter(dataStore.items, function(item) {
-  return item.isOnTimeLine;
-}))
-
-onMounted(() => {
-  userInfo = userStore.user
-  console.log("userInfo", userInfo);
+// function getItems() {
+//   const q = query(collection(db, "posts"));
   
+//   onSnapshot(q, (snapshot) => {    
+//     snapshot.docChanges().forEach((change) => {
+//       let changeData: any = change.doc.data()
+//       if (change.type === "added") {
+//         console.log("New post: ", changeData);
+//         posts.value.push(changeData);
+//       }
+//       if (change.type === "modified") {
+//         console.log("Modified post: ", changeData);
+//       }
+//       if (change.type === "removed") {
+//         console.log("Removed post: ", changeData);
+//       }
+//     });
+//   });
+
+//   console.log("posts posts.value", posts.value);  
+// }
+
+const showTweets = computed(() => {
+  console.log("computed");
+  
+  return dataStore.items
+    .filter(i => i.isOnTimeLine)
+    .sort((objA: Post, objB: Post) => new Date(objA.time).valueOf() - new Date(objB.time).valueOf())
+})
+
+onBeforeMount(() => {
+  console.log('onBeforeMount')
   dataStore.getItems()
-  dataStore.sortItems()
+  userInfo = userStore.user  
 })
 </script>
 

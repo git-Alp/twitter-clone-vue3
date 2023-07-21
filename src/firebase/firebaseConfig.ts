@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore, getDocs, collection, addDoc } from "firebase/firestore";
+import { Post } from "../stores/posts";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_APIKEY,
@@ -11,5 +13,34 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID
 };
 
-export const firebaseApp = initializeApp(firebaseConfig);
-export const auth = getAuth(firebaseApp);
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp)
+const postCollection = collection(db, 'posts');
+
+const getPosts = async () => {
+  const postSnapshot = await getDocs(postCollection);
+  const postList = postSnapshot.docs.map(doc => {
+    const docData = doc.data() as Post
+    return docData;
+  });
+  return postList;
+}
+
+const getPost = async (id: any) => {
+  const postSnapshot = await getDocs(postCollection);
+  const postList = postSnapshot.docs.map(doc => doc.data());
+  const post = postList.find(post => post.id == id)
+  return post;
+}
+
+const addPost = (newPost: Post) => {
+  addDoc(collection(db, "posts"), newPost);
+}
+
+export default {
+  auth,
+  getPosts,
+  getPost,
+  addPost
+} 

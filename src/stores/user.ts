@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import _ from "lodash";
-import { auth } from '../firebase/firebaseConfig';
+import firebaseConfig from '../firebase/firebaseConfig';
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { router } from "../router";
 
@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', {
   }),
   actions: {
     login () {
-      signInWithPopup(auth, provider)
+      signInWithPopup(firebaseConfig.auth, provider)
         .then((result) => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           const token = credential?.accessToken;
@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', {
         });
     },
     logout () {
-      signOut(auth)
+      signOut(firebaseConfig.auth)
       .then(() => {
         this.user.login = false
         router.push('/')

@@ -5,16 +5,60 @@ import { useUserStore, User } from '../stores/user';
 import { useRoute, RouterLink } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
 import _ from "lodash";
+import { collection, query, onSnapshot, addDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
+// import { db } from "../firebase/firebaseConfig";
 
-const dataStore = useDataStore();
+// const dataStore = useDataStore();
 const userStore = useUserStore();
 const route = useRoute()
 const {id} = route.params
 const comments = ref([]as Post[]);
 let newCommentContent = ref('');
 let userInfo = reactive({} as User);
+let posts = ref([] as Post[])
+
+// function getItems() {
+//   const q = query(collection(db, "posts"));
+  
+//   onSnapshot(q, (snapshot) => {    
+//     snapshot.docChanges().forEach((change) => {
+//       let changeData: any = change.doc.data()
+//       if (change.type === "added") {
+//         console.log("New post: ", changeData);
+//         posts.value.push(changeData);
+//       }
+//       if (change.type === "modified") {
+//         let index = posts.value.findIndex(tweet => tweet.id === id)
+//         console.log("Modified post: ", changeData);
+//         console.log("posts.value[index]", posts.value[index]);
+        
+//         Object.assign(posts.value[index], changeData)
+//         console.log("posts.value", posts.value);
+//       }
+//       if (change.type === "removed") {
+//         console.log("Removed post: ", changeData);
+//       }
+//     });
+//   });
+// }
+
+function addComment(item: Post, id: any) {
+  console.log("item", item);
+  console.log("id", id);
+  
+  const findItem = _.find(posts.value, function(item) {
+    return item.id === id;
+  });
+  if (findItem) {
+    findItem.comments ++;
+    findItem.commentList.push(item);
+  }
+  console.log("findItem", findItem);
+
+}
 
 function addNewComment () {
+  
   let newComment = {
     id: uuidv4(),
     src: userInfo.photo,
@@ -30,25 +74,55 @@ function addNewComment () {
     commentList: []
   };
 
-  dataStore.addItem(newComment);
-  dataStore.addComment(newComment, id);
+  // addComment(newComment, id);
+  // const postDoc = doc(db, "posts", "lTFuFeP3oij5gEkHlUKt");
+//   const postDoc = doc(collection(db, "posts"));
+// console.log("postDoc1", postDoc);
+
+// updateDoc(postDoc, {
+//     "commentList": arrayUnion(
+//       ...[
+//       newComment
+//     ]
+//     )
+// });
+  // updateDoc(postDoc, {
+  //   comments: ++,
+  //   commentList: push(newComment)
+  // });
+  // addDoc(collection(db, "posts"), newComment);
+  // console.log("postDoc2", postDoc);
+
+  // console.log("tweetcomment posts.value", posts.value);
+  
   newCommentContent.value = ''
 }
 
+function handleLikePost(id: string) {
+  const findItem = _.find(posts.value, function(item) {
+    return item.id === id;
+  });
+  if (findItem) {
+    findItem.isLiked = !findItem.isLiked
+    findItem.isLiked ? findItem.like ++ : findItem.like --;
+  }
+}
+
 function handleComments() {
-  const findItem = _.find(dataStore.items, function(item) {
+  const findItem = _.find(posts.value, function(item) {
     return item.id === id;
   })
   if (findItem) comments.value = findItem.commentList;
 }
 
-function handleLikePost(val: string) {
-  dataStore.likePost(val)
-}
+// function handleLikePost(val: string) {
+//   dataStore.likePost(val)
+// }
 
-watch(dataStore.items, handleComments)
+watch(posts.value, handleComments)
 onMounted(() => {
   userInfo = userStore.user
+  // getItems()
   handleComments()
 })
 </script>
@@ -84,7 +158,7 @@ onMounted(() => {
             <div class="flex items-center max-w-full">
               <p class="truncate font-semibold max-w-[120px] md:max-w-[110px] xl:max-w-[310px]"> {{tweet.fullname}} </p>
               <p class="truncate text-sm text-dark ml-2 max-w-[80px] xl:max-w-[100px]"> {{tweet.username}} </p>
-              <p class="truncate text-sm text-dark mx-2"> {{handleDateFormat(tweet.time)}} </p>
+              <!-- <p class="truncate text-sm text-dark mx-2"> {{handleDateFormat(tweet.time)}} </p> -->
               <i class="truncate fa fa-ellipsis-h text-dark ml-auto mr-2"></i>
             </div>
             <p class="py-2"> {{ tweet.content }} </p>

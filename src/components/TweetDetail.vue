@@ -1,21 +1,52 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { useDataStore, handleDateFormat } from '../stores/posts';
+import { useDataStore, handleDateFormat, Post } from '../stores/posts';
 import TweetComment from './TweetComment.vue';
 import _ from "lodash";
+import { collection, query, onSnapshot } from "firebase/firestore";
+// import { db } from "../firebase/firebaseConfig";
 
 const route = useRoute()
-const dataStore = useDataStore();
+// const dataStore = useDataStore();
 const {id} = route.params
+let posts = ref([] as Post[])
 
-function handleLikePost(val: string) {
-  dataStore.likePost(val)
+// function getItems() {
+//   const q = query(collection(db, "posts"));
+  
+//   onSnapshot(q, (snapshot) => {    
+//     snapshot.docChanges().forEach((change) => {
+//       let changeData: any = change.doc.data()
+//       if (change.type === "added") {
+//         console.log("New post: ", changeData);
+//         posts.value.push(changeData);
+//       }
+//       if (change.type === "modified") {
+//         console.log("Modified post: ", changeData);
+//       }
+//       if (change.type === "removed") {
+//         console.log("Removed post: ", changeData);
+//       }
+//     });
+//   });
+// }
+
+function handleLikePost(id: string) {
+  const findItem = _.find(posts.value, function(item) {
+    return item.id === id;
+  });
+  if (findItem) {
+    findItem.isLiked = !findItem.isLiked
+    findItem.isLiked ? findItem.like ++ : findItem.like --;
+  }
 }
 
-const tweet = computed(() => _.find(dataStore.items, function(item) {
+const tweet = computed(() => _.find(posts.value, function(item) {
   return item.id === id;
 }))
+
+// onMounted(() => getItems())
 </script>
 
 <template>
