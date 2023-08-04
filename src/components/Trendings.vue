@@ -37,7 +37,7 @@ const trendingData = ref(data)
         <p class="text-lg font-bold">Who to Follow</p>
       </div>
       <button v-for="(friend, index) in trendingData.friends" :key="index" class="w-full flex hover:bg-lighter p-3">
-        <img :src="`${ friend.src }`" class="w-12 h-12 rounded-full border border-lighter object-cover" />
+        <img :src="friend.src" class="w-12 h-12 rounded-full border border-lighter object-cover" />
         <div class="hidden lg:block ml-4 text-start">
           <p class="text-sm font-bold leading-tight"> {{ friend.name }} </p>
           <p class="text-sm leading-tight"> {{ friend.username }} </p>

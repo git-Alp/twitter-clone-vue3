@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import _ from "lodash";
 import firebaseConfig from '../firebase/firebaseConfig';
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { router } from "../router";

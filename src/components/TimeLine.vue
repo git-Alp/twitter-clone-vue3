@@ -1,34 +1,15 @@
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount, computed, onMounted } from 'vue'
+import { ref, reactive, onBeforeMount, computed } from 'vue'
 import { useDataStore, handleDateFormat, Post } from '../stores/posts';
 import { useUserStore, User } from '../stores/user';
 import { RouterLink } from 'vue-router'
 import {v4 as uuidv4} from 'uuid'
-import firebaseConfig from '../firebase/firebaseConfig';
-// import { collection, query, onSnapshot, addDoc } from "firebase/firestore";
-// import { db } from "../firebase/firebaseConfig";
 
 const dataStore = useDataStore();
 const userStore = useUserStore();
 
 let newTweetContent = ref('');
 let userInfo = reactive({} as User);
-let posts = ref([] as Post[])
-
-function handleGetPosts () {
-  // firebaseConfig.getPosts()
-  //   .then(response => {
-  //     console.log("response2", response);
-  //     posts.value = response
-  //     console.log("posts.value", posts.value);
-      
-  //   })
-  //   .catch(error => {
-  //     console.log(error)
-  //   })
-
-  posts.value = dataStore.items
-}
 
 function addNewTweet () {
   let newTweet = {
@@ -46,48 +27,21 @@ function addNewTweet () {
     commentList: []
   };
 
-  // addDoc(collection(db, "posts"), newTweet);
-  // firebaseConfig.addPost(newTweet)
   dataStore.createItem(newTweet)
   newTweetContent.value = ''
 }
 
 function handleLikePost(val: string) {
-  dataStore.likePost(val)
+  dataStore.likeItem(val)
 }
 
-// function getItems() {
-//   const q = query(collection(db, "posts"));
-  
-//   onSnapshot(q, (snapshot) => {    
-//     snapshot.docChanges().forEach((change) => {
-//       let changeData: any = change.doc.data()
-//       if (change.type === "added") {
-//         console.log("New post: ", changeData);
-//         posts.value.push(changeData);
-//       }
-//       if (change.type === "modified") {
-//         console.log("Modified post: ", changeData);
-//       }
-//       if (change.type === "removed") {
-//         console.log("Removed post: ", changeData);
-//       }
-//     });
-//   });
-
-//   console.log("posts posts.value", posts.value);  
-// }
-
 const showTweets = computed(() => {
-  console.log("computed");
-  
   return dataStore.items
     .filter(i => i.isOnTimeLine)
     .sort((objA: Post, objB: Post) => new Date(objA.time).valueOf() - new Date(objB.time).valueOf())
 })
 
 onBeforeMount(() => {
-  console.log('onBeforeMount')
   dataStore.getItems()
   userInfo = userStore.user  
 })
@@ -102,7 +56,7 @@ onBeforeMount(() => {
       <div class="flex-none">
         <img :src="userInfo.photo" class="flex-none w-12 h-12 rounded-full border border-lighter"/>
       </div>
-      <form v-on:submit.prevent = "addNewTweet" class="w-full px-4 relative">
+      <form @submit.prevent = "addNewTweet" class="w-full px-4 relative">
         <textarea v-model="newTweetContent" placeholder="What is happening?!" maxlength="500" class="mt-3 pb-3 w-full focus:outline-none"/>
         <div class="flex items-center">
           <i class="text-lg text-blue mr-4 far fa-image"></i>
@@ -120,14 +74,14 @@ onBeforeMount(() => {
     <div class="flex flex-col-reverse">
       <div v-for="tweet in showTweets" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
         <div class="flex-none mr-4">
-          <img :src="`${tweet.src}`" class="h-12 w-12 rounded-full flex-none"/>
+          <img :src="tweet.src" class="h-12 w-12 rounded-full flex-none"/>
         </div>
         <div class="max-w-full w-full">
           <RouterLink :to="`/tweet/${tweet.id}`" class="w-full">
             <div class="flex items-center max-w-full">
               <p class="truncate font-semibold max-w-[120px] md:max-w-[110px] xl:max-w-[310px]"> {{tweet.fullname}} </p>
               <p class="truncate text-sm text-dark ml-2 max-w-[80px] xl:max-w-[100px]"> {{tweet.username}} </p>
-              <p class="truncate text-sm text-dark mx-2">{{ handleDateFormat(tweet.time) }}</p>
+              <p v-if="tweet.time" class="truncate text-sm text-dark mx-2">{{ handleDateFormat(tweet.time) }}</p>
               <i class="truncate fa fa-ellipsis-h text-dark ml-auto mr-2"></i>
             </div>
             <p class="py-2"> {{ tweet.content }} </p>
