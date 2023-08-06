@@ -49,7 +49,7 @@ onBeforeMount(() => userInfo = userStore.user)
         <button @click="navData.dropdown = false" class="w-full text-left hover:bg-lightest border-t border-lighter p-3 test-sm focus:outline-none">
           Add an existing account
         </button>
-        <button @click="userStore.logout" class="w-full text-left hover:bg-lightest border-t border-lighter p-3 test-sm focus:outline-none">
+        <button @click="userStore.logout(); navData.dropdown = false" class="w-full text-left hover:bg-lightest border-t border-lighter p-3 test-sm focus:outline-none">
           Log out {{userInfo.email}}
         </button>
       </div>

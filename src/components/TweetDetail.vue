@@ -10,14 +10,28 @@ const dataStore = useDataStore();
 const {id} = route.params
 let post = ref({} as Post)
 
-function handleLikePost(val: string) {
+function likePost(val: string) {
   post.value.isLiked ? post.value.like -- : post.value.like ++;
   post.value.isLiked = !post.value.isLiked
   dataStore.likeItem(val)
-
 }
 
-function getItem(id:any) {
+function likeComment(val: string) {
+  const commentIndex = post.value.commentList.findIndex(item => item.id === val)
+  const findComment = post.value.commentList[commentIndex]
+  
+  if (findComment) {
+    findComment.isLiked ? findComment.like -- : findComment.like ++;
+    findComment.isLiked = !findComment.isLiked
+  }
+}
+
+function updateComments(comment: Post) {
+  post.value.commentList.push(comment)
+  post.value.comments++
+}
+
+function getItem() {
   firebaseConfig.getPost(id)
     .then(response => {
       if (response) post.value = response
@@ -25,7 +39,7 @@ function getItem(id:any) {
     .catch(error => console.log(error))
 }
 
-onMounted(() => getItem(id))
+onMounted(() => getItem())
 </script>
 
 <template>
@@ -55,7 +69,7 @@ onMounted(() => getItem(id))
               <i class="fas fa-retweet mr-3"></i>
               <p> {{post.retweets}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="handleLikePost(post.id)">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="likePost(post.id)">
               <i class="fa-heart mr-3" :class="post.isLiked ? 'fa text-red-600' : 'fas'"></i>
               <p> {{post.like}} </p>
             </div>
@@ -66,6 +80,10 @@ onMounted(() => getItem(id))
         </div>
     </div>
 
-    <TweetComment />
+    <TweetComment 
+      :post="post.commentList" 
+      @comment="updateComments" 
+      @like="likeComment" 
+    />
   </div>
 </template>

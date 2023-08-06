@@ -27,11 +27,13 @@ function addNewTweet () {
     commentList: []
   };
 
-  dataStore.createItem(newTweet)
-  newTweetContent.value = ''
+  if (newTweetContent.value.trim() != '') {
+    dataStore.createItem(newTweet)
+    newTweetContent.value = ''
+  }
 }
 
-function handleLikePost(val: string) {
+function likePost(val: string) {
   dataStore.likeItem(val)
 }
 
@@ -95,7 +97,7 @@ onBeforeMount(() => {
               <i class="fas fa-retweet mr-3"></i>
               <p> {{tweet.retweets}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="handleLikePost(tweet.id)">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="likePost(tweet.id)">
               <i class="fa-heart mr-3" :class="tweet.isLiked ? 'fa text-red-600' : 'fas'"></i>
               <p> {{tweet.like}} </p>
             </div>

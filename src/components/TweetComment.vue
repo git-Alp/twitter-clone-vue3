@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, PropType } from 'vue';
 import { useDataStore, Post, handleDateFormat } from '../stores/posts';
 import { User, useUserStore } from '../stores/user';
 import { useRoute, RouterLink } from 'vue-router'
 import { v4 as uuidv4 } from 'uuid'
-import _ from "lodash";
-import firebaseConfig from "../firebase/firebaseConfig";
 
+const props = defineProps({
+  post: {
+    type: Array as PropType<Post[]>,
+    required: false
+  }
+})
+const emits = defineEmits(['comment', 'like'])
 const dataStore = useDataStore();
 const userStore = useUserStore();
 const route = useRoute()
 const {id} = route.params
 
-let post = ref({} as Post)
 let newCommentContent = ref('');
 let userInfo = reactive({} as User);
 
@@ -32,38 +36,22 @@ function addNewComment () {
     commentList: []
   };
 
-  post.value.commentList.push(newComment)
-  post.value.comments++
-  
-  dataStore.createItem(newComment)
-  dataStore.addItem(id, newComment)
-  newCommentContent.value = ''
-}
-
-function getItem(id: any) {
-  firebaseConfig.getPost(id)
-    .then(response => {
-      if (response) post.value = response
-    })
-    .catch(error => console.log(error))
-}
-
-function handleLikePost(val: string) {
-  const commentIndex = post.value.commentList.findIndex(item => {
-    return item.id === val
-  })
-  const findComment = post.value.commentList[commentIndex]
-  if (findComment) {
-    findComment.isLiked ? findComment.like -- : findComment.like ++;
-    findComment.isLiked = !findComment.isLiked
+  if (newCommentContent.value.trim() != '') {
+    emits('comment', newComment)
+    dataStore.createItem(newComment)
+    dataStore.addItem(id, newComment)
+    newCommentContent.value = ''
   }
+}
+
+function likePost(val: string) {
+  emits('like', val)
   dataStore.likeItem(val)
   dataStore.likeSubItem(id, val)
 }
 
 onMounted(() => {
   userInfo = userStore.user
-  getItem(id)
 })
 </script>
 
@@ -89,7 +77,7 @@ onMounted(() => {
       </form>
     </div>
     <div class="flex flex-col-reverse">
-      <div v-for="tweet in post.commentList" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
+      <div v-for="tweet in props.post" :key="tweet.id" class="w-full p-4 border-b hover:bg-lighter flex">
         <div class="flex-none mr-4">
           <img :src="tweet.src" class="h-12 w-12 rounded-full flex-none"/>
         </div>
@@ -112,7 +100,7 @@ onMounted(() => {
               <i class="fas fa-retweet mr-3"></i>
               <p> {{tweet.retweets}} </p>
             </div>
-            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="handleLikePost(tweet.id)">
+            <div class="flex items-center text-sm text-dark hover:cursor-pointer" @click="likePost(tweet.id)">
               <i class="fa-heart mr-3" :class="tweet.isLiked ? 'fa text-red-600' : 'fas'"></i>
               <p> {{tweet.like}} </p>
             </div>

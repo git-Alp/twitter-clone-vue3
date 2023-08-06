@@ -27,7 +27,6 @@ export const useDataStore = defineStore('data', {
   state: () => ({
     items: [] as Post[]
   }),
-
   actions: {
     getItems() {
       firebaseConfig.getPosts()
@@ -37,6 +36,13 @@ export const useDataStore = defineStore('data', {
         .catch(error => {
           console.log(error)
         })
+    },
+    getItem(id: any) {
+      firebaseConfig.getPost(id)
+      .then(response => {
+        if (response) return response
+      })
+      .catch(error => console.log(error))
     },
     createItem(item: Post) {
       firebaseConfig.addPost(item);
